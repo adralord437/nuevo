@@ -1,3 +1,2 @@
 # nuevo
-primer repositorio
-bbbnbnbnbnbnbnb
+Aca vamos a enviar los avances al trabajo

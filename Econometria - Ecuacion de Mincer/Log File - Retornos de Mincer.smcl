@@ -1,0 +1,218 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\user\Desktop\Econometria.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res} 5 May 2020, 15:33:06
+
+{com}. do "C:\Users\user\AppData\Local\Temp\STD00000000.tmp"
+{txt}
+{com}. ************** Tarea Domiciliaria 2 de Econometria ********************
+. ************** Angel David Rodriguez Alvarado**************************
+. **************           20151022511         **************************
+. 
+. // Cargando los datos
+.  use "C:\Users\User\Desktop\Hogar0512.dta", clear
+{txt}
+{com}. 
+.  // Especificando el modelo a estimar
+.  
+.  /*Ln Ingresos = B0 + B1*Educacion + B2*Experiencia + B3*Experiencia^2 + e
+> 
+>  Donde:
+>  Ln Ingresos = Logaritmo natural de Salario mensual
+>  Educacion = Años de educacion formal
+>  Experiencia = Edad - Años de estudio - Edad inicio educacion.    
+> 
+>  
+>  b) Especifique el tipo, fuente y el horizonte de datos que utilizaría para el
+>     estimar el modelo poblacional propuesto.
+>         
+>         Tipo: Regresion por Minimos cuadrados ordinarios
+>         Fuente: Encuesta permanente de Hogares 2012. INE
+>         Horizonte: 2012, datos de corte tranversal
+>         
+> 
+> c) Estudie los datos perdidos y los datos atípicos para cada variable.
+> */
+. *Datos Perdidos
+. ssc install nmissing.pkg
+{txt}checking {hilite:nmissing} consistency and verifying not already installed...
+all files already exist and are up to date.
+
+{com}. 
+. nmissing ysmop // Valores perdidos salario mensual
+
+{txt}ysmop{col 16}{res} 27148
+{txt}
+{com}. nmissing anosest // Valores perdidos nivel educativo
+
+{txt}anosest{col 16}{res}  7030
+{txt}
+{com}. nmissing EDAD // Valores perdidos Edad
+{txt}
+{com}. **
+. 
+. //Evaluando la distribucion muestral de los regresores
+. qnorm ysmop  // No concluyente
+{res}{txt}
+{com}. qnorm anosest  // Distribuida normalmente
+{res}{txt}
+{com}. qnorm EDAD     // No concluyente
+{res}{txt}
+{com}. 
+. //Evaluando normalidad formalmente con el criterio de asimetria
+. sum ysmop, detail // Asimetria muy significativa. No normalmente distribuida
+
+          {txt}Ingreso por Salario Monetario (Ocupacion
+                         Principal)
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}      210              0
+{txt} 5%    {res}      750              0
+{txt}10%    {res}     1200              0       {txt}Obs         {res}      5,682
+{txt}25%    {res}     2400              0       {txt}Sum of Wgt. {res}      5,682
+
+{txt}50%    {res}     4800                      {txt}Mean          {res} 5974.166
+                        {txt}Largest       Std. Dev.     {res} 6169.858
+{txt}75%    {res}     7000          75000
+{txt}90%    {res}    12000          80000       {txt}Variance      {res} 3.81e+07
+{txt}95%    {res}    15000          80000       {txt}Skewness      {res} 4.753558
+{txt}99%    {res}    30000         120000       {txt}Kurtosis      {res} 47.46317
+{txt}
+{com}. sum EDAD, detail //Asimetria baja. Normalmente distribuida
+
+                            {txt}Edad
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}        0              0
+{txt} 5%    {res}        2              0
+{txt}10%    {res}        5              0       {txt}Obs         {res}     32,830
+{txt}25%    {res}       12              0       {txt}Sum of Wgt. {res}     32,830
+
+{txt}50%    {res}       22                      {txt}Mean          {res} 27.31758
+                        {txt}Largest       Std. Dev.     {res} 20.59848
+{txt}75%    {res}       40             98
+{txt}90%    {res}       58            100       {txt}Variance      {res} 424.2974
+{txt}95%    {res}       68            100       {txt}Skewness      {res} .8683221
+{txt}99%    {res}       83            100       {txt}Kurtosis      {res} 3.006631
+{txt}
+{com}. 
+. * Datos atipicos
+. grubbs anosest // Efectuamos la prueba de Grubbs. No hay valores atipicos
+{res}Variable: anosest (0/1 variable recording which observations are outliers: grubbs_anosest).
+{txt}(7,030 missing values generated)
+{res}0 outliers. No more outliers
+{txt}
+{com}. grubbs EDAD    // No hay valores atipicos
+{res}Variable: EDAD (0/1 variable recording which observations are outliers: grubbs_EDAD).
+0 outliers. No more outliers
+{txt}
+{com}. 
+. // Estimando el modelo por OLS
+. 
+. * Redefiniendo variables
+. 
+. gen a = EDAD - anosest - 6   //Generando variable experiencia
+{txt}(7,030 missing values generated)
+
+{com}. 
+. gen l_ingresos = log(ysmop)  //Logaritmizando variable ingresos
+{txt}(27,154 missing values generated)
+
+{com}. gen l_ingresos_sinatipicos = log(ysmop) if ysmop  <= 30000  // Eliminando valores atipicos
+{txt}(27,205 missing values generated)
+
+{com}. gen educ = anosest            // Generando variable educacion
+{txt}(7,030 missing values generated)
+
+{com}. gen exper = a if a >= 0      //tomando solo años de experiencia positivos 
+{txt}(7,505 missing values generated)
+
+{com}. gen exper_sqr = exper*exper   // Generando regresos experiencia al cuadrado
+{txt}(7,505 missing values generated)
+
+{com}. 
+. 
+. // Regresion
+. regress l_ingresos educ exper exper_sqr              // Regresion con valores atipicos
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     5,295
+{txt}{hline 13}{c +}{hline 34}   F(3, 5291)      = {res}  1122.88
+{txt}       Model {c |} {res} 1783.20558         3   594.40186   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 2800.81962     5,291  .529355438   {txt}R-squared       ={res}    0.3890
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.3887
+{txt}       Total {c |} {res}  4584.0252     5,294  .865890669   {txt}Root MSE        =   {res} .72757
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}  l_ingresos{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}educ {c |}{col 14}{res}{space 2} .1363813{col 26}{space 2} .0024868{col 37}{space 1}   54.84{col 46}{space 3}0.000{col 54}{space 4} .1315061{col 67}{space 3} .1412565
+{txt}{space 7}exper {c |}{col 14}{res}{space 2} .0549857{col 26}{space 2}  .002403{col 37}{space 1}   22.88{col 46}{space 3}0.000{col 54}{space 4} .0502749{col 67}{space 3} .0596965
+{txt}{space 3}exper_sqr {c |}{col 14}{res}{space 2}-.0006766{col 26}{space 2} .0000484{col 37}{space 1}  -13.97{col 46}{space 3}0.000{col 54}{space 4}-.0007715{col 67}{space 3}-.0005817
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 6.540982{col 26}{space 2} .0348195{col 37}{space 1}  187.85{col 46}{space 3}0.000{col 54}{space 4} 6.472721{col 67}{space 3} 6.609242
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. regress l_ingresos_sinatipicos educ exper exper_sqr // Regresion sin valores atipicos
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     5,245
+{txt}{hline 13}{c +}{hline 34}   F(3, 5241)      = {res}  1005.38
+{txt}       Model {c |} {res}  1571.0328         3  523.677601   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 2729.90143     5,241  .520874151   {txt}R-squared       ={res}    0.3653
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.3649
+{txt}       Total {c |} {res} 4300.93423     5,244  .820162897   {txt}Root MSE        =   {res} .72172
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}l_ingresos~s{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}educ {c |}{col 14}{res}{space 2} .1315429{col 26}{space 2}  .002531{col 37}{space 1}   51.97{col 46}{space 3}0.000{col 54}{space 4} .1265812{col 67}{space 3} .1365046
+{txt}{space 7}exper {c |}{col 14}{res}{space 2} .0533899{col 26}{space 2} .0024007{col 37}{space 1}   22.24{col 46}{space 3}0.000{col 54}{space 4} .0486834{col 67}{space 3} .0580964
+{txt}{space 3}exper_sqr {c |}{col 14}{res}{space 2}-.0006605{col 26}{space 2} .0000484{col 37}{space 1}  -13.66{col 46}{space 3}0.000{col 54}{space 4}-.0007553{col 67}{space 3}-.0005657
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}  6.59262{col 26}{space 2} .0351313{col 37}{space 1}  187.66{col 46}{space 3}0.000{col 54}{space 4} 6.523748{col 67}{space 3} 6.661492
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. // Evaluando si existe Heterocedasticidad
+. hettest  // Rechazamos la hipotesis nula concluyendo que si hay heterocedascticidad
+
+{txt}Breusch-Pagan / Cook-Weisberg test for heteroskedasticity 
+         Ho: Constant variance
+{p 9 20}Variables: fitted values of l_ingresos_sinatipicos
+
+{col 10}chi2({res}1{txt}){col 23}={res}   264.98
+{txt}{col 10}Prob > chi2{col 23}={res}   0.0000
+{txt}
+{com}. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+.                                                                                         
+. 
+{txt}end of do-file
+
+{com}. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\user\Desktop\Econometria.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res} 5 May 2020, 15:33:32
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}

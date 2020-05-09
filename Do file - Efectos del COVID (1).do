@@ -8,12 +8,14 @@
 //Cargando los datos
 clear all
 use 
-" C:\Users\user\Desktop\Econometria - Efecto del COVID-19\data2.dta"
+"C:\Users\user\Desktop\Econometria - Efecto del COVID-19\data2.dta"
+
+import excel "E:\Data final .xlsm", sheet("Sheet1") firstrow
 
 tsset Año
 *** Inciso A " Especifique El Modelo Teorico " 
 
-/* Modelo:
+Modelo:
 Ingresos fiscales = B0 + B1*log(PIB_Real) + B2*GINI + e   ; Para toda t
 
 Donde : 
@@ -75,8 +77,7 @@ varsoc l_pib, exog(Año) //1 lag
 varsoc t_Y, exog(Año) //1 lag
 varsoc GINI, exog(Año) //2 lags
 
-**Prueba General de Dickey Fuller - PIB Real 
-****Aplicando  el algoritmo de Dolado et. al (1990)*******
+**Prueba General de Dickey Fuller - PIB Real
 dfuller l_pib, lags(1) trend reg // Regresion con tendencia y constante
 dfuller l_pib, lags(1) reg // Regresion sin tendencia pero con constante
 dfuller l_pib, lags(1) noconstant reg // Regresion sin tendecia y sin constante
@@ -84,20 +85,20 @@ dfuller l_pib, lags(1) noconstant reg // Regresion sin tendecia y sin constante
 ** conclucion : El PIB real tiene tendencia deterministica 
 
 
-
 **Prueba General de Dickey Fuller - Ingresos Fiscales
 dfuller t_Y, lags(1) trend reg // Regresion con tendencia y constante
 dfuller t_Y, lags(1) reg // Regresion sin tendencia pero con constante
 dfuller t_Y, lags(1) noconstant reg // Regresion sin tendecia y sin constante
 
-conclucion : Los ingresos fiscales tienen tendencia estocastica 
+* conclucion : Los ingresos fiscales tienen tendencia estocastica 
 
 
 **Prueba General de Dickey Fuller - Coeficiente de GINI
 dfuller GINI, lags(2) trend reg // Regresion con tendencia y constante
 
-conclucion : El coeficeinte de Gini tiene tendencia deterministica 
+* conclucion : El coeficeinte de Gini tiene tendencia deterministica 
 
+Inciso E "  //Verificando por Cointegracion Engel - Granger " 
 
 // Verificando si PIB Real e Ingresos Fiscales son estacionarias en tendencia
 
@@ -114,12 +115,11 @@ line t_Y_detr Año, title(Ingresos Fiscales %PIB)
 *GINI
 reg GINI trend
 predict GINI_detr, resid
+predict pibt, resid
 line GINI_detr Año,title(GINI_detrended)
 corrgram GINI_detr   //Correlograma cae abruptamente, signo de estacionariedad
 
-Inciso E "  //Verificando por Cointegracion Engel - Granger " 
-
-reg t_Y_detr l_pib GINI
+reg t_Y_detr l_pib GINI 
 predict residual, res
 line residual Año, title(Residuos vs Tiempo)
 twoway (scatter residual L.residual) (lfit residual L.residual), title(Residuos vs. Residuos con rezago)
@@ -130,4 +130,21 @@ dfgls residual, maxlag(1) // No se rechaza la hipotesis nula
 
 ssc install egranger
 egranger l_pib t_Y  // No hay cointegracion
+
+* Inciso H " Estime el Modelo De correccion De errores " 
+
+** regrecion de largo plazo 
+reg t_Y_detr l_pib GINI
+predict residual, res
+varsoc residual, exog(Año)
+dfgls residual, maxlag(0) * los criterios de informacion nos dicen que el maximo de rezagos es 0
+
+***Diferencias de una serie
+gen dl_pib=d.l_pib
+gen dGINI=d.GINI
+gen lres=l.residual * resagamos un periodo los residuos de la regrecion a largo plazo 
+gen dres=d.lres
+
+** Regrecion De Corto Plazo 
+reg t_Y_detr dl_pib dGINI lres 
 

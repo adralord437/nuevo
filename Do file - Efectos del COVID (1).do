@@ -7,12 +7,39 @@
 
 //Cargando los datos
 clear all
-use "C:\Users\user\Desktop\Econometria - Efecto del COVID-19\data2.dta"
+use 
+"C:\Users\user\Desktop\Econometria - Efecto del COVID-19\data2.dta"
+
+import excel "E:\Data final .xlsm", sheet("Sheet1") firstrow
+
 tsset Año
+*** Inciso A " Especifique El Modelo Teorico " 
 
 /* Modelo:
 Ingresos fiscales = B0 + B1*log(PIB_Real) + B2*GINI + e   ; Para toda t
-*/
+
+Donde : 
+
+* variable independiente : Ingreso Fiscales Como Proporcion Del PIB 
+	
+* variables dependientes :  
+
+**  log(PIB_Real) =  Pib Real De Honduras en Log
+** Gini = Coefiente De Gini Para Honduras  
+**  e  = Perturbacionaes aleatorias 
+** B0 = Constante
+**β1 = Parámetro del PIB real 
+**β2 = Parámetro del Coefiente De Gini
+ 
+Inciso B     " Especique el Tipo , Fuente , Horizonte  ***
+
+** Tipo : Regresion de Minimos Cuadrados Ordinarios (OLS) 
+ **Fuente : Los ingresos fiscales fueron extraídos de la base de datos de la OCDE  "Organización para la Cooperación y el Desarrollo Económicos" 
+            PIB Real fue extraído de los datos del BCH Banco Central De Honduras" 
+			El Coeficente de Gini fue extraido de la Base de Datos del Banco Mundial.
+ **Horizonte : Horizonte de datos del tipo " Serie De Tiempo "
+
+ inciso C  " Estudie La Estacionariedad de cada vaiable de cada variable del modelo" 
 
 //Redefiniendo variables
 rename var10 GINI
@@ -40,6 +67,8 @@ corrgram GINI, lags(17)
 ac GINI, lags(17) title(Correlograma Total Coeficiente de GINI)
 pac GINI, lags(6) title(Correlograma Parcial Coeficiente de GINI)
 
+inciso D  " Estudie el tipo de tendencia " 
+
 // Prueba de Raiz Unitaria para las series
 
 ** Evaluando el numero de rezagos optimos para cada variable
@@ -53,13 +82,23 @@ dfuller l_pib, lags(1) trend reg // Regresion con tendencia y constante
 dfuller l_pib, lags(1) reg // Regresion sin tendencia pero con constante
 dfuller l_pib, lags(1) noconstant reg // Regresion sin tendecia y sin constante
 
+** conclucion : El PIB real tiene tendencia estocastica 
+
+
+
 **Prueba General de Dickey Fuller - Ingresos Fiscales
 dfuller t_Y, lags(1) trend reg // Regresion con tendencia y constante
 dfuller t_Y, lags(1) reg // Regresion sin tendencia pero con constante
 dfuller t_Y, lags(1) noconstant reg // Regresion sin tendecia y sin constante
 
+conclucion : Los ingresos fiscales tienen tendencia estocastica 
+
+
 **Prueba General de Dickey Fuller - Coeficiente de GINI
 dfuller GINI, lags(2) trend reg // Regresion con tendencia y constante
+
+conclucion : El coeficeinte de Gini tiene tendencia deterministica 
+
 
 // Verificando si PIB Real e Ingresos Fiscales son estacionarias en tendencia
 
@@ -79,7 +118,7 @@ predict GINI_detr, resid
 line GINI_detr Año,title(GINI_detrended)
 corrgram GINI_detr   //Correlograma cae abruptamente, signo de estacionariedad
 
-//Verificando por Cointegracion Engel - Granger
+Inciso E "  //Verificando por Cointegracion Engel - Granger " 
 
 reg t_Y_detr l_pib GINI
 predict residual, res

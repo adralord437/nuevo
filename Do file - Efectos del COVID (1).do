@@ -75,7 +75,8 @@ varsoc l_pib, exog(Año) //1 lag
 varsoc t_Y, exog(Año) //1 lag
 varsoc GINI, exog(Año) //2 lags
 
-**Prueba General de Dickey Fuller - PIB Real
+**Prueba General de Dickey Fuller - PIB Real 
+****Aplicando  el algoritmo de Dolado et. al (1990)*******
 dfuller l_pib, lags(1) trend reg // Regresion con tendencia y constante
 dfuller l_pib, lags(1) reg // Regresion sin tendencia pero con constante
 dfuller l_pib, lags(1) noconstant reg // Regresion sin tendecia y sin constante

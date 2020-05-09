@@ -8,9 +8,7 @@
 //Cargando los datos
 clear all
 use 
-"C:\Users\user\Desktop\Econometria - Efecto del COVID-19\data2.dta"
-
-import excel "E:\Data final .xlsm", sheet("Sheet1") firstrow
+" C:\Users\user\Desktop\Econometria - Efecto del COVID-19\data2.dta"
 
 tsset Año
 *** Inciso A " Especifique El Modelo Teorico " 

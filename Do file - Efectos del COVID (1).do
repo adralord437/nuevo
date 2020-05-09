@@ -80,7 +80,7 @@ dfuller l_pib, lags(1) trend reg // Regresion con tendencia y constante
 dfuller l_pib, lags(1) reg // Regresion sin tendencia pero con constante
 dfuller l_pib, lags(1) noconstant reg // Regresion sin tendecia y sin constante
 
-** conclucion : El PIB real tiene tendencia estocastica 
+** conclucion : El PIB real tiene tendencia deterministica 
 
 
 

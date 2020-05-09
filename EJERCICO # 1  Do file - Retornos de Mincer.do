@@ -88,10 +88,10 @@ hettest  // Rechazamos la hipotesis nula concluyendo que si hay heterocedasctici
 **ysmop = 6.59262 + 0.1315429Educacion  + 0.533899Experiencia - 0.0006605Experiencia^2+ e
 
 
-*** Si nuestra población no presenta años de estudio ni años de experienca laboral,
+*** Si nuestra población no presenta años de estudio ni años de experienca laboral, 
 *** el ingreso séra aproximadamente de 6.59262
 
-*** Si los años de estudio aumentan en 1 unidad adicional, los ingresos se incrementaran en 0.1315429 puntos.
+*** Si los años de estudio aumentan en 1 unidad adicional, los ingresos se incrementaran en 0.1315429 %
 *** Si la experiencia laboral aumenta en 1 unidad adicional, los ingresos se incrementaran en 0.533899 puntos.
 *** Si la experiencia laboral  al cuadrado aumenta en 1 unidad adicional, los ingresos disminuiran en 0.0006605 puntos.
 

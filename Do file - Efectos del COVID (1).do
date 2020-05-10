@@ -20,16 +20,16 @@ Ingresos fiscales = B0 + B1*log(PIB_Real) + B2*GINI + e   ; Para toda t
 
 Donde : 
 
-* variable independiente : Ingreso Fiscales Como Proporcion Del PIB 
+* Variable Independiente : Ingreso Fiscales Como Proporcion Del PIB 
 	
-* variables dependientes :  
+* Variables Dependientes :  
 
 **  log(PIB_Real) =  Pib Real De Honduras en Log
-** Gini = Coefiente De Gini Para Honduras  
-**  e  = Perturbacionaes aleatorias 
-** B0 = Constante
-**β1 = Parámetro del PIB real 
-**β2 = Parámetro del Coefiente De Gini
+**           Gini = Coefiente De Gini Para Honduras  
+**             e  = Perturbacionaes aleatorias 
+**             B0 = Constante
+**             β1 = Parámetro del PIB real 
+**             β2 = Parámetro del Coefiente De Gini
  
 Inciso B     " Especique el Tipo , Fuente , Horizonte  ***
 
@@ -39,7 +39,7 @@ Inciso B     " Especique el Tipo , Fuente , Horizonte  ***
 			El Coeficente de Gini fue extraido de la Base de Datos del Banco Mundial.
  **Horizonte : Horizonte de datos del tipo " Serie De Tiempo "
 
- inciso C  " Estudie La Estacionariedad de cada vaiable de cada variable del modelo" 
+ Inciso C  " Estudie La Estacionariedad de cada vaiable de cada variable del modelo" 
 
 //Redefiniendo variables
 rename var10 GINI
@@ -82,7 +82,7 @@ dfuller l_pib, lags(1) trend reg // Regresion con tendencia y constante
 dfuller l_pib, lags(1) reg // Regresion sin tendencia pero con constante
 dfuller l_pib, lags(1) noconstant reg // Regresion sin tendecia y sin constante
 
-** conclucion : El PIB real tiene tendencia deterministica 
+** Conclusion : El PIB real no tiene raiz unitaria. Serie estacionaria en tendencia
 
 
 **Prueba General de Dickey Fuller - Ingresos Fiscales
@@ -90,17 +90,17 @@ dfuller t_Y, lags(1) trend reg // Regresion con tendencia y constante
 dfuller t_Y, lags(1) reg // Regresion sin tendencia pero con constante
 dfuller t_Y, lags(1) noconstant reg // Regresion sin tendecia y sin constante
 
-* conclucion : Los ingresos fiscales tienen tendencia estocastica 
+* Conclusion : Los ingresos fiscales tienen tienen raiz unitaria y por ende, es estacionaria en diferencias.
 
 
 **Prueba General de Dickey Fuller - Coeficiente de GINI
 dfuller GINI, lags(2) trend reg // Regresion con tendencia y constante
 
-* conclucion : El coeficeinte de Gini tiene tendencia deterministica 
+* conclucion : El coeficeinte de Gini no tiene raiz unitaria. Estacionaria en tendencia
 
 Inciso E "  //Verificando por Cointegracion Engel - Granger " 
 
-// Verificando si PIB Real e Ingresos Fiscales son estacionarias en tendencia
+// Estacionarizando las series. Aplicando detrend y diferencias.
 
 * PIB Real
 gen trend = _n
@@ -131,9 +131,31 @@ dfgls residual, maxlag(1) // No se rechaza la hipotesis nula
 ssc install egranger
 egranger l_pib t_Y  // No hay cointegracion
 
+
+*Inciso f.) En el modelo estimado se puede hacer inferencia estandar?
+
+// Verificando si se cumplen supuestos para inferencia estandar
+reg t_Y_st pib_detr GINI_detr
+predict resid2, resid
+
+** Prueba Breusch-Godfrey
+* H0: Homocedasticidad; Ausencia autocorrelacion
+* H1: Heterocedasticidad; Presencia Autocorrelacion
+
+estat bgodfrey  // No hay presencia de autocorrelacion
+hettest            // Hay presencia de heterocedasticidad
+
+** Verificando Normalidad de los errores
+qnorm resid2        // Hay presencia de Normalidad
+sum resid2, detail  
+histogram resid2
+
+** Dado que hay heterocedasticidad se estima el modelo con matriz robusta de errores
+reg t_Y_st pib_detr GINI_detr, robust
+
 * Inciso H " Estime el Modelo De correccion De errores " 
 
-** regrecion de largo plazo 
+** Regresion de largo plazo 
 reg t_Y_detr l_pib GINI
 predict residual, res
 varsoc residual, exog(Año)
@@ -145,6 +167,6 @@ gen dGINI=d.GINI
 gen lres=l.residual * resagamos un periodo los residuos de la regrecion a largo plazo 
 gen dres=d.lres
 
-** Regrecion De Corto Plazo 
+** Regresion De Corto Plazo 
 reg t_Y_detr dl_pib dGINI lres 
 

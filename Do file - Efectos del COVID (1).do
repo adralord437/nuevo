@@ -170,3 +170,10 @@ gen dres=d.lres
 ** Regresion De Corto Plazo 
 reg t_Y_detr dl_pib dGINI lres 
 
+I - )  Interprete el impacto del crecimiento de la economía en  “ H” 
+Basándonos en el inciso  “H”   podemos decir que: 
+Si el coefiente de GINI  aumenta en 1 unidad adicional, la recaudación tributaria como proporción del PIB disminuyen en 0.0008828 puntos. 
+Si el pib real aumenta en 1 %  adicional, la recaudación tributaria como proporción del PIB  se incrementaran en 0.2739702  puntos.
+
+
+

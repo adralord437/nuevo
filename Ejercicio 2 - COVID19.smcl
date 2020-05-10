@@ -1,0 +1,703 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\user\Desktop\Econometria - Efecto del COVID-19\Ejercicio 2 - COVID19.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res} 9 May 2020, 22:42:10
+
+{com}. do "C:\Users\user\AppData\Local\Temp\STD00000000.tmp"
+{txt}
+{com}. **********************           Tarea de Econometria                        *****
+. ******************* Efectos del COVID19 sobre los Ingresos Fiscales **************
+. *******************          Angel David Rodriguez Alvarado 20151022511 **************
+. *******************          Alexis Daniel Herrera Aguilar  20161001378 **************
+. 
+. 
+. 
+. //Cargando los datos
+. clear all
+{txt}
+{com}. use "C:\Users\user\Desktop\Econometria - Efecto del COVID-19\data2.dta"
+{txt}
+{com}. 
+. tsset Año
+{res}{txt}{col 9}time variable:  {res}{col 25}Año, 2000 to 2017
+{txt}{col 17}delta:  {res}1 unit
+{txt}
+{com}. *** Inciso A " Especifique El Modelo Teorico " 
+. 
+. *Modelo:
+. *Ingresos fiscales = B0 + B1*log(PIB_Real) + B2*GINI + e   ; Para toda t
+. 
+. *Donde : 
+. 
+. * Variable Independiente : Ingreso Fiscales Como Proporcion Del PIB 
+.         
+. * Variables Dependientes :  
+. 
+. **  log(PIB_Real) =  Pib Real De Honduras en Log
+. **           Gini = Coefiente De Gini Para Honduras  
+. **             e  = Perturbacionaes aleatorias 
+. **             B0 = Constante
+. **             β1 = Parámetro del PIB real 
+. **             β2 = Parámetro del Coefiente De Gini
+.  
+. *Inciso B     " Especique el Tipo , Fuente , Horizonte  ***
+. 
+. ** Tipo : Regresion de Minimos Cuadrados Ordinarios (OLS) 
+.  **Fuente : Los ingresos fiscales fueron extraídos de la base de datos de la OCDE  "Organización para la Cooperación y el Desarrollo Económicos" 
+. *            PIB Real fue extraído de los datos del BCH Banco Central De Honduras" 
+. *                       El Coeficente de Gini fue extraido de la Base de Datos del Banco Mundial.
+.  **Horizonte : Horizonte de datos del tipo " Serie De Tiempo "
+. 
+.  *Inciso C  " Estudie La Estacionariedad de cada vaiable de cada variable del modelo" 
+. 
+. //Redefiniendo variables
+. rename var10 GINI
+{res}{txt}
+{com}. gen l_pib = log(pib_real)
+{txt}
+{com}. gen t_Y = if_deflactados/pib_real // Ingresos Fiscales como proporcion del PIB
+{txt}
+{com}. 
+. //Visualizando las series
+. line l_pib Año, title(Pib_Real Log) // PIB Real
+{res}{txt}
+{com}. line t_Y Año, title(Ingresos Fiscales (%PIB))  //Ingresos Fiscales
+{res}{txt}
+{com}. line GINI Año, title(Coeficiente de GINI Honduras)
+{res}{txt}
+{com}. 
+. // Correlogramas
+. 
+. ** PIB Real
+. corrgram l_pib, lags(17)
+
+{txt}{col 43}-1       0       1 -1       0       1
+ LAG       AC       PAC      Q     Prob>Q  [Autocorrelation]  [Partial Autocor]
+{hline 79}
+1     {res}{col 9} 0.8274{col 18} 0.9784{col 27} 14.499{col 36}0.0001{col 44}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}  {col 63}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1} 
+{txt}2     {res}{col 9} 0.6523{col 18}-0.2219{col 27} 24.071{col 36}0.0000{col 44}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}   {col 63}       {hline 1}{c RT}        
+{txt}3     {res}{col 9} 0.4798{col 18} 0.1485{col 27} 29.597{col 36}0.0000{col 44}        {c LT}{hline 1}{hline 1}{hline 1}     {col 63}        {c LT}{hline 1}       
+{txt}4     {res}{col 9} 0.3174{col 18} 0.2611{col 27} 32.188{col 36}0.0000{col 44}        {c LT}{hline 1}{hline 1}      {col 63}        {c LT}{hline 1}{hline 1}      
+{txt}5     {res}{col 9} 0.1712{col 18} 0.1233{col 27} 32.999{col 36}0.0000{col 44}        {c LT}{hline 1}       {col 63}        {c |}        
+{txt}6     {res}{col 9} 0.0423{col 18} 0.2901{col 27} 33.053{col 36}0.0000{col 44}        {c |}        {col 63}        {c LT}{hline 1}{hline 1}      
+{txt}7     {res}{col 9}-0.0584{col 18} 0.2763{col 27} 33.165{col 36}0.0000{col 44}        {c |}        {col 63}        {c LT}{hline 1}{hline 1}      
+{txt}8     {res}{col 9}-0.1313{col 18}      .{col 27} 33.785{col 36}0.0000{col 44}       {hline 1}{c RT}        {col 63}
+{txt}9     {res}{col 9}-0.1838{col 18}      .{col 27} 35.137{col 36}0.0001{col 44}       {hline 1}{c RT}        {col 63}
+{txt}10    {res}{col 9}-0.2781{col 18}      .{col 27} 38.617{col 36}0.0000{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}11    {res}{col 9}-0.3549{col 18}      .{col 27} 45.095{col 36}0.0000{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}12    {res}{col 9}-0.4029{col 18}      .{col 27} 54.834{col 36}0.0000{col 44}     {hline 1}{hline 1}{hline 1}{c RT}        {col 63}
+{txt}13    {res}{col 9}-0.4160{col 18}      .{col 27} 67.293{col 36}0.0000{col 44}     {hline 1}{hline 1}{hline 1}{c RT}        {col 63}
+{txt}14    {res}{col 9}-0.3999{col 18}      .{col 27} 81.683{col 36}0.0000{col 44}     {hline 1}{hline 1}{hline 1}{c RT}        {col 63}
+{txt}15    {res}{col 9}-0.3495{col 18}      .{col 27} 96.341{col 36}0.0000{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}16    {res}{col 9}-0.2658{col 18}      .{col 27} 109.06{col 36}0.0000{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}17    {res}{col 9}-0.1499{col 18}      .{col 27} 117.15{col 36}0.0000{col 44}       {hline 1}{c RT}        {col 63}
+{txt}
+{com}. ac l_pib, lags(17)
+{res}{txt}
+{com}. pac l_pib, lags(6)
+{res}{txt}
+{com}. 
+. ** Ingresos Fiscales
+. corrgram t_Y, lags(17)
+
+{txt}{col 43}-1       0       1 -1       0       1
+ LAG       AC       PAC      Q     Prob>Q  [Autocorrelation]  [Partial Autocor]
+{hline 79}
+1     {res}{col 9} 0.7124{col 18} 1.0180{col 27} 10.747{col 36}0.0010{col 44}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}   {col 63}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}
+{txt}2     {res}{col 9} 0.4000{col 18}-0.1828{col 27} 14.348{col 36}0.0008{col 44}        {c LT}{hline 1}{hline 1}{hline 1}     {col 63}       {hline 1}{c RT}        
+{txt}3     {res}{col 9} 0.1637{col 18}-0.0559{col 27} 14.991{col 36}0.0018{col 44}        {c LT}{hline 1}       {col 63}        {c |}        
+{txt}4     {res}{col 9}-0.0233{col 18} 0.0203{col 27} 15.005{col 36}0.0047{col 44}        {c |}        {col 63}        {c |}        
+{txt}5     {res}{col 9}-0.1136{col 18} 0.0177{col 27} 15.362{col 36}0.0089{col 44}        {c |}        {col 63}        {c |}        
+{txt}6     {res}{col 9}-0.1253{col 18} 0.4514{col 27} 15.833{col 36}0.0147{col 44}       {hline 1}{c RT}        {col 63}        {c LT}{hline 1}{hline 1}{hline 1}     
+{txt}7     {res}{col 9}-0.0554{col 18} 0.2326{col 27} 15.934{col 36}0.0257{col 44}        {c |}        {col 63}        {c LT}{hline 1}       
+{txt}8     {res}{col 9} 0.0609{col 18}      .{col 27} 16.067{col 36}0.0414{col 44}        {c |}        {col 63}
+{txt}9     {res}{col 9} 0.1869{col 18}      .{col 27} 17.464{col 36}0.0419{col 44}        {c LT}{hline 1}       {col 63}
+{txt}10    {res}{col 9} 0.0700{col 18}      .{col 27} 17.684{col 36}0.0605{col 44}        {c |}        {col 63}
+{txt}11    {res}{col 9}-0.0829{col 18}      .{col 27} 18.038{col 36}0.0807{col 44}        {c |}        {col 63}
+{txt}12    {res}{col 9}-0.1925{col 18}      .{col 27} 20.261{col 36}0.0623{col 44}       {hline 1}{c RT}        {col 63}
+{txt}13    {res}{col 9}-0.2773{col 18}      .{col 27} 25.798{col 36}0.0181{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}14    {res}{col 9}-0.3682{col 18}      .{col 27} 38.001{col 36}0.0005{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}15    {res}{col 9}-0.3739{col 18}      .{col 27} 54.774{col 36}0.0000{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}16    {res}{col 9}-0.3126{col 18}      .{col 27} 72.367{col 36}0.0000{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}17    {res}{col 9}-0.1689{col 18}      .{col 27} 82.635{col 36}0.0000{col 44}       {hline 1}{c RT}        {col 63}
+{txt}
+{com}. ac t_Y, lags(17) title(Correlograma Total Ingresos Fiscales %PIB)
+{res}{txt}
+{com}. pac t_Y, lags(6) title(Correlograma Parcial Ingresos Fiscales %PIB)
+{res}{txt}
+{com}. **
+. corrgram GINI, lags(17)
+
+{txt}{col 43}-1       0       1 -1       0       1
+ LAG       AC       PAC      Q     Prob>Q  [Autocorrelation]  [Partial Autocor]
+{hline 79}
+1     {res}{col 9} 0.7561{col 18} 0.8444{col 27} 12.106{col 36}0.0005{col 44}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}  {col 63}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}  
+{txt}2     {res}{col 9} 0.4379{col 18}-0.3057{col 27}  16.42{col 36}0.0003{col 44}        {c LT}{hline 1}{hline 1}{hline 1}     {col 63}      {hline 1}{hline 1}{c RT}        
+{txt}3     {res}{col 9} 0.1925{col 18} 0.1161{col 27} 17.309{col 36}0.0006{col 44}        {c LT}{hline 1}       {col 63}        {c |}        
+{txt}4     {res}{col 9} 0.0494{col 18} 0.1543{col 27} 17.372{col 36}0.0016{col 44}        {c |}        {col 63}        {c LT}{hline 1}       
+{txt}5     {res}{col 9} 0.0344{col 18} 0.3179{col 27} 17.405{col 36}0.0038{col 44}        {c |}        {col 63}        {c LT}{hline 1}{hline 1}      
+{txt}6     {res}{col 9} 0.0650{col 18} 0.1843{col 27} 17.531{col 36}0.0075{col 44}        {c |}        {col 63}        {c LT}{hline 1}       
+{txt}7     {res}{col 9} 0.0704{col 18} 0.3427{col 27} 17.694{col 36}0.0134{col 44}        {c |}        {col 63}        {c LT}{hline 1}{hline 1}      
+{txt}8     {res}{col 9}-0.0748{col 18}      .{col 27} 17.895{col 36}0.0220{col 44}        {c |}        {col 63}
+{txt}9     {res}{col 9}-0.2951{col 18}      .{col 27} 21.377{col 36}0.0111{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}10    {res}{col 9}-0.3788{col 18}      .{col 27} 27.834{col 36}0.0019{col 44}     {hline 1}{hline 1}{hline 1}{c RT}        {col 63}
+{txt}11    {res}{col 9}-0.4008{col 18}      .{col 27} 36.095{col 36}0.0002{col 44}     {hline 1}{hline 1}{hline 1}{c RT}        {col 63}
+{txt}12    {res}{col 9}-0.3614{col 18}      .{col 27}  43.93{col 36}0.0000{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}13    {res}{col 9}-0.2597{col 18}      .{col 27} 48.787{col 36}0.0000{col 44}      {hline 1}{hline 1}{c RT}        {col 63}
+{txt}14    {res}{col 9}-0.1757{col 18}      .{col 27} 51.565{col 36}0.0000{col 44}       {hline 1}{c RT}        {col 63}
+{txt}15    {res}{col 9}-0.0861{col 18}      .{col 27} 52.455{col 36}0.0000{col 44}        {c |}        {col 63}
+{txt}16    {res}{col 9}-0.0514{col 18}      .{col 27}  52.93{col 36}0.0000{col 44}        {c |}        {col 63}
+{txt}17    {res}{col 9}-0.0219{col 18}      .{col 27} 53.103{col 36}0.0000{col 44}        {c |}        {col 63}
+{txt}
+{com}. ac GINI, lags(17) title(Correlograma Total Coeficiente de GINI)
+{res}{txt}
+{com}. pac GINI, lags(6) title(Correlograma Parcial Coeficiente de GINI)
+{res}{txt}
+{com}. 
+. *inciso D  " Estudie el tipo de tendencia " 
+. 
+. // Prueba de Raiz Unitaria para las series
+. 
+. ** Evaluando el numero de rezagos optimos para cada variable
+. 
+. varsoc l_pib, exog(Año) //1 lag
+
+{txt}{col 4}Selection-order criteria
+{col 4}Sample:  {res}2004 - 2017 {txt}{col 49}Number of obs {col 68}= {res}       14
+{col 3}{text}{c TLC}{hline 4}{c TT}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c TRC}
+{col 3}{text}{c |}lag{col 8}{c |}    LL  {col 18}   LR  {col 27}  df{col 32}   p  {col 39}   FPE {col 48}    AIC {col 58}   HQIC {col 68}   SBIC {col 79}{c |}
+{col 3}{text}{c LT}{hline 4}{c +}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c RT}
+{col 3}{text}{c |}  0{col 8}{c |}{result}{space 1} 33.9711{col 18}{col 27}{col 32}{col 39} .000609{col 48}{space 1} -4.5673{col 58}{space 1}-4.57575{col 68}{space 1}  -4.476{col 79}{text}{c |}
+{col 3}{text}{c |}  1{col 8}{c |}{result}{space 1} 37.9952{col 18}{space 1} 8.0483{col 26}*{col 27}   1{col 32} 0.005{col 39} .000397{col 48}{space 1}-4.99931{col 58}{space 1}-5.01199{col 68}{space 1}-4.86237{col 77}*{col 79}{text}{c |}
+{col 3}{text}{c |}  2{col 8}{c |}{result}{space 1} 39.1432{col 18}{space 1}  2.296{col 27}   1{col 32} 0.130{col 39} .000393{col 47}*{col 48}{space 1}-5.02046{col 57}*{col 58}{space 1}-5.03736{col 67}*{col 68}{space 1}-4.83787{col 79}{text}{c |}
+{col 3}{text}{c |}  3{col 8}{c |}{result}{space 1} 39.3181{col 18}{space 1} .34979{col 27}   1{col 32} 0.554{col 39} .000449{col 48}{space 1}-4.90259{col 58}{space 1}-4.92371{col 68}{space 1}-4.67435{col 79}{text}{c |}
+{col 3}{text}{c |}  4{col 8}{c |}{result}{space 1} 39.3716{col 18}{space 1} .10688{col 27}   1{col 32} 0.744{col 39} .000528{col 48}{space 1}-4.76736{col 58}{space 1}-4.79272{col 68}{space 1}-4.49348{col 79}{text}{c |}
+{col 3}{text}{c BLC}{hline 4}{c BT}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c BRC}
+{space 3}Endogenous:  l_pib
+{space 3} Exogenous:  Año  _cons
+
+{com}. varsoc t_Y, exog(Año) //1 lag
+
+{txt}{col 4}Selection-order criteria
+{col 4}Sample:  {res}2004 - 2017 {txt}{col 49}Number of obs {col 68}= {res}       14
+{col 3}{text}{c TLC}{hline 4}{c TT}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c TRC}
+{col 3}{text}{c |}lag{col 8}{c |}    LL  {col 18}   LR  {col 27}  df{col 32}   p  {col 39}   FPE {col 48}    AIC {col 58}   HQIC {col 68}   SBIC {col 79}{c |}
+{col 3}{text}{c LT}{hline 4}{c +}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c RT}
+{col 3}{text}{c |}  0{col 8}{c |}{result}{space 1} 43.6286{col 18}{col 27}{col 32}{col 39} .000153{col 48}{space 1}-5.94694{col 58}{space 1}-5.95539{col 68}{space 1}-5.85564{col 79}{text}{c |}
+{col 3}{text}{c |}  1{col 8}{c |}{result}{space 1} 48.8125{col 18}{space 1} 10.368{col 26}*{col 27}   1{col 32} 0.001{col 39} .000085{col 47}*{col 48}{space 1}-6.54464{col 57}*{col 58}{space 1}-6.55732{col 67}*{col 68}{space 1} -6.4077{col 77}*{col 79}{text}{c |}
+{col 3}{text}{c |}  2{col 8}{c |}{result}{space 1} 49.3813{col 18}{space 1} 1.1376{col 27}   1{col 32} 0.286{col 39} .000091{col 48}{space 1}-6.48304{col 58}{space 1}-6.49994{col 68}{space 1}-6.30045{col 79}{text}{c |}
+{col 3}{text}{c |}  3{col 8}{c |}{result}{space 1} 49.8882{col 18}{space 1} 1.0139{col 27}   1{col 32} 0.314{col 39} .000099{col 48}{space 1} -6.4126{col 58}{space 1}-6.43373{col 68}{space 1}-6.18437{col 79}{text}{c |}
+{col 3}{text}{c |}  4{col 8}{c |}{result}{space 1} 50.7064{col 18}{space 1} 1.6364{col 27}   1{col 32} 0.201{col 39} .000105{col 48}{space 1}-6.38663{col 58}{space 1}-6.41199{col 68}{space 1}-6.11275{col 79}{text}{c |}
+{col 3}{text}{c BLC}{hline 4}{c BT}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c BRC}
+{space 3}Endogenous:  t_Y
+{space 3} Exogenous:  Año  _cons
+
+{com}. varsoc GINI, exog(Año) //2 lags
+
+{txt}{col 4}Selection-order criteria
+{col 4}Sample:  {res}2004 - 2017 {txt}{col 49}Number of obs {col 68}= {res}       14
+{col 3}{text}{c TLC}{hline 4}{c TT}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c TRC}
+{col 3}{text}{c |}lag{col 8}{c |}    LL  {col 18}   LR  {col 27}  df{col 32}   p  {col 39}   FPE {col 48}    AIC {col 58}   HQIC {col 68}   SBIC {col 79}{c |}
+{col 3}{text}{c LT}{hline 4}{c +}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c RT}
+{col 3}{text}{c |}  0{col 8}{c |}{result}{space 1}-27.1466{col 18}{col 27}{col 32}{col 39} 3.77306{col 48}{space 1} 4.16379{col 58}{space 1} 4.15534{col 68}{space 1} 4.25509{col 79}{text}{c |}
+{col 3}{text}{c |}  1{col 8}{c |}{result}{space 1}-26.3657{col 18}{space 1} 1.5618{col 27}   1{col 32} 0.211{col 39} 3.91167{col 48}{space 1}  4.1951{col 58}{space 1} 4.18242{col 68}{space 1} 4.33204{col 79}{text}{c |}
+{col 3}{text}{c |}  2{col 8}{c |}{result}{space 1}-23.6976{col 18}{space 1} 5.3362{col 26}*{col 27}   1{col 32} 0.021{col 39} 3.11203{col 47}*{col 48}{space 1} 3.95679{col 57}*{col 58}{space 1} 3.93989{col 67}*{col 68}{space 1} 4.13938{col 77}*{col 79}{text}{c |}
+{col 3}{text}{c |}  3{col 8}{c |}{result}{space 1}-22.9386{col 18}{space 1}  1.518{col 27}   1{col 32} 0.218{col 39} 3.27486{col 48}{space 1} 3.99122{col 58}{space 1}  3.9701{col 68}{space 1} 4.21946{col 79}{text}{c |}
+{col 3}{text}{c |}  4{col 8}{c |}{result}{space 1}-22.5418{col 18}{space 1} .79359{col 27}   1{col 32} 0.373{col 39} 3.66441{col 48}{space 1}  4.0774{col 58}{space 1} 4.05204{col 68}{space 1} 4.35128{col 79}{text}{c |}
+{col 3}{text}{c BLC}{hline 4}{c BT}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c BRC}
+{space 3}Endogenous:  GINI
+{space 3} Exogenous:  Año  _cons
+
+{com}. 
+. **Prueba General de Dickey Fuller - PIB Real
+. dfuller l_pib, lags(1) trend reg // Regresion con tendencia y constante
+
+{txt}Augmented Dickey-Fuller test for unit root         Number of obs   = {res}       16
+
+{txt}{col 32}{hline 10} Interpolated Dickey-Fuller {hline 9}
+                  Test         1% Critical       5% Critical      10% Critical
+               Statistic           Value             Value             Value
+{hline 78}
+ Z(t)         {res}    -2.163            -4.380            -3.600            -3.240
+{txt}{hline 78}
+MacKinnon approximate p-value for Z(t) = {res}0.5108
+
+{txt}{hline 13}{c TT}{hline 64}
+D.l_pib{col 14}{c |}{col 21}Coef.{col 29}Std. Err.{col 44}t{col 49}P>|t|{col 59}[95% Conf. Interval]
+{hline 13}{c +}{hline 64}
+       l_pib{col 14}{c |}
+{col 10}L1. {c |}{res}{col 17}-.3569316{col 28} .1650294{col 38}   -2.16{col 48} 0.051{col 58}-.7164998{col 70} .0026366
+{txt}{col 10}LD. {c |}{res}{col 17} .4066607{col 28} .2503257{col 38}    1.62{col 48} 0.130{col 58}-.1387522{col 70} .9520736
+      {txt}_trend{col 14}{c |}{res}{col 17} .0129822{col 28} .0064805{col 38}    2.00{col 48} 0.068{col 58}-.0011376{col 70} .0271019
+       {txt}_cons{col 14}{c |}{res}{col 17} 4.157394{col 28} 1.904056{col 38}    2.18{col 48} 0.050{col 58} .0088112{col 70} 8.305976
+{txt}{hline 13}{c BT}{hline 64}
+
+{com}. dfuller l_pib, lags(1) reg // Regresion sin tendencia pero con constante
+
+{txt}Augmented Dickey-Fuller test for unit root         Number of obs   = {res}       16
+
+{txt}{col 32}{hline 10} Interpolated Dickey-Fuller {hline 9}
+                  Test         1% Critical       5% Critical      10% Critical
+               Statistic           Value             Value             Value
+{hline 78}
+ Z(t)         {res}    -1.058            -3.750            -3.000            -2.630
+{txt}{hline 78}
+MacKinnon approximate p-value for Z(t) = {res}0.7315
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}     D.l_pib{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}l_pib {c |}
+{space 9}L1. {c |}{col 14}{res}{space 2}-.0304363{col 26}{space 2} .0287682{col 37}{space 1}   -1.06{col 46}{space 3}0.309{col 54}{space 4}-.0925861{col 67}{space 3} .0317136
+{txt}{space 9}LD. {c |}{col 14}{res}{space 2} .2218944{col 26}{space 2} .2582795{col 37}{space 1}    0.86{col 46}{space 3}0.406{col 54}{space 4}-.3360846{col 67}{space 3} .7798733
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .3942086{col 26}{space 2} .3449404{col 37}{space 1}    1.14{col 46}{space 3}0.274{col 54}{space 4}-.3509898{col 67}{space 3} 1.139407
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. dfuller l_pib, lags(1) noconstant reg // Regresion sin tendecia y sin constante
+
+{txt}Augmented Dickey-Fuller test for unit root         Number of obs   = {res}       16
+
+{txt}{col 32}{hline 10} Interpolated Dickey-Fuller {hline 9}
+                  Test         1% Critical       5% Critical      10% Critical
+               Statistic           Value             Value             Value
+{hline 78}
+ Z(t)         {res}     2.605            -2.660            -1.950            -1.600
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}     D.l_pib{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}l_pib {c |}
+{space 9}L1. {c |}{col 14}{res}{space 2} .0024241{col 26}{space 2} .0009304{col 37}{space 1}    2.61{col 46}{space 3}0.021{col 54}{space 4} .0004285{col 67}{space 3} .0044196
+{txt}{space 9}LD. {c |}{col 14}{res}{space 2} .2802364{col 26}{space 2} .2559366{col 37}{space 1}    1.09{col 46}{space 3}0.292{col 54}{space 4}-.2686931{col 67}{space 3} .8291658
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. ** Conclusion : El PIB real no tiene raiz unitaria. Serie estacionaria en tendencia
+. 
+. 
+. **Prueba General de Dickey Fuller - Ingresos Fiscales
+. dfuller t_Y, lags(1) trend reg // Regresion con tendencia y constante
+
+{txt}Augmented Dickey-Fuller test for unit root         Number of obs   = {res}       16
+
+{txt}{col 32}{hline 10} Interpolated Dickey-Fuller {hline 9}
+                  Test         1% Critical       5% Critical      10% Critical
+               Statistic           Value             Value             Value
+{hline 78}
+ Z(t)         {res}    -1.469            -4.380            -3.600            -3.240
+{txt}{hline 78}
+MacKinnon approximate p-value for Z(t) = {res}0.8395
+
+{txt}{hline 13}{c TT}{hline 64}
+D.t_Y{col 14}{c |}{col 21}Coef.{col 29}Std. Err.{col 44}t{col 49}P>|t|{col 59}[95% Conf. Interval]
+{hline 13}{c +}{hline 64}
+         t_Y{col 14}{c |}
+{col 10}L1. {c |}{res}{col 17}-.3756767{col 28} .2557312{col 38}   -1.47{col 48} 0.168{col 58} -.932867{col 70} .1815137
+{txt}{col 10}LD. {c |}{res}{col 17} .3550841{col 28} .3196055{col 38}    1.11{col 48} 0.288{col 58}-.3412764{col 70} 1.051445
+      {txt}_trend{col 14}{c |}{res}{col 17} .0011677{col 28} .0007364{col 38}    1.59{col 48} 0.139{col 58}-.0004368{col 70} .0027722
+       {txt}_cons{col 14}{c |}{res}{col 17} .0614642{col 28} .0414714{col 38}    1.48{col 48} 0.164{col 58}-.0288942{col 70} .1518226
+{txt}{hline 13}{c BT}{hline 64}
+
+{com}. dfuller t_Y, lags(1) reg // Regresion sin tendencia pero con constante
+
+{txt}Augmented Dickey-Fuller test for unit root         Number of obs   = {res}       16
+
+{txt}{col 32}{hline 10} Interpolated Dickey-Fuller {hline 9}
+                  Test         1% Critical       5% Critical      10% Critical
+               Statistic           Value             Value             Value
+{hline 78}
+ Z(t)         {res}    -0.299            -3.750            -3.000            -2.630
+{txt}{hline 78}
+MacKinnon approximate p-value for Z(t) = {res}0.9257
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       D.t_Y{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 9}t_Y {c |}
+{space 9}L1. {c |}{col 14}{res}{space 2}-.0474349{col 26}{space 2} .1586649{col 37}{space 1}   -0.30{col 46}{space 3}0.770{col 54}{space 4}-.3902095{col 67}{space 3} .2953397
+{txt}{space 9}LD. {c |}{col 14}{res}{space 2} .1828064{col 26}{space 2} .3175972{col 37}{space 1}    0.58{col 46}{space 3}0.575{col 54}{space 4}-.5033206{col 67}{space 3} .8689335
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}  .012152{col 26}{space 2} .0289906{col 37}{space 1}    0.42{col 46}{space 3}0.682{col 54}{space 4}-.0504784{col 67}{space 3} .0747825
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. dfuller t_Y, lags(1) noconstant reg // Regresion sin tendecia y sin constante
+
+{txt}Augmented Dickey-Fuller test for unit root         Number of obs   = {res}       16
+
+{txt}{col 32}{hline 10} Interpolated Dickey-Fuller {hline 9}
+                  Test         1% Critical       5% Critical      10% Critical
+               Statistic           Value             Value             Value
+{hline 78}
+ Z(t)         {res}     1.553            -2.660            -1.950            -1.600
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       D.t_Y{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 9}t_Y {c |}
+{space 9}L1. {c |}{col 14}{res}{space 2} .0188655{col 26}{space 2} .0121461{col 37}{space 1}    1.55{col 46}{space 3}0.143{col 54}{space 4}-.0071853{col 67}{space 3} .0449163
+{txt}{space 9}LD. {c |}{col 14}{res}{space 2} .1186015{col 26}{space 2} .2699057{col 37}{space 1}    0.44{col 46}{space 3}0.667{col 54}{space 4}-.4602886{col 67}{space 3} .6974917
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. * Conclusion : Los ingresos fiscales tienen tienen raiz unitaria y por ende, es estacionaria en diferencias.
+. 
+. 
+. **Prueba General de Dickey Fuller - Coeficiente de GINI
+. dfuller GINI, lags(2) trend reg // Regresion con tendencia y constante
+
+{txt}Augmented Dickey-Fuller test for unit root         Number of obs   = {res}       15
+
+{txt}{col 32}{hline 10} Interpolated Dickey-Fuller {hline 9}
+                  Test         1% Critical       5% Critical      10% Critical
+               Statistic           Value             Value             Value
+{hline 78}
+ Z(t)         {res}    -3.627            -4.380            -3.600            -3.240
+{txt}{hline 78}
+MacKinnon approximate p-value for Z(t) = {res}0.0276
+
+{txt}{hline 13}{c TT}{hline 64}
+D.GINI{col 14}{c |}{col 21}Coef.{col 29}Std. Err.{col 44}t{col 49}P>|t|{col 59}[95% Conf. Interval]
+{hline 13}{c +}{hline 64}
+        GINI{col 14}{c |}
+{col 10}L1. {c |}{res}{col 17}-1.071432{col 28} .2953783{col 38}   -3.63{col 48} 0.005{col 58}-1.729576{col 70}-.4132879
+{txt}{col 10}LD. {c |}{res}{col 17} .5382979{col 28} .2300457{col 38}    2.34{col 48} 0.041{col 58} .0257242{col 70} 1.050872
+        {txt}L2D. {c |}{res}{col 17} .2172175{col 28} .2567182{col 38}    0.85{col 48} 0.417{col 58}-.3547862{col 70} .7892213
+      {txt}_trend{col 14}{c |}{res}{col 17}-.6061477{col 28}  .167758{col 38}   -3.61{col 48} 0.005{col 58}-.9799359{col 70}-.2323596
+       {txt}_cons{col 14}{c |}{res}{col 17} 64.53566{col 28} 17.63801{col 38}    3.66{col 48} 0.004{col 58} 25.23572{col 70} 103.8356
+{txt}{hline 13}{c BT}{hline 64}
+
+{com}. 
+. * conclucion : El coeficeinte de Gini no tiene raiz unitaria. Estacionaria en tendencia
+. 
+. *Inciso E "  //Verificando por Cointegracion Engel - Granger " 
+. 
+. // Estacionarizando las series. Aplicando detrend y diferencias.
+. 
+. * PIB Real
+. gen trend = _n
+{txt}
+{com}. reg l_pib trend
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}        18
+{txt}{hline 13}{c +}{hline 34}   F(1, 16)        = {res}   797.94
+{txt}       Model {c |} {res} .718131747         1  .718131747   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} .014399698        16  .000899981   {txt}R-squared       ={res}    0.9803
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.9791
+{txt}       Total {c |} {res} .732531445        17  .043090085   {txt}Root MSE        =   {res}    .03
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       l_pib{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}trend {c |}{col 14}{res}{space 2} .0384995{col 26}{space 2} .0013629{col 37}{space 1}   28.25{col 46}{space 3}0.000{col 54}{space 4} .0356102{col 67}{space 3} .0413888
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 11.55796{col 26}{space 2} .0147527{col 37}{space 1}  783.45{col 46}{space 3}0.000{col 54}{space 4} 11.52668{col 67}{space 3} 11.58923
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. predict pib_detr, resid
+{txt}
+{com}. line pib_detr Año, title(PIB_detrended)
+{res}{txt}
+{com}. corrgram pib_detr  //Correlograma cae abruptamente, signo de estacionariedad
+
+{txt}{col 43}-1       0       1 -1       0       1
+ LAG       AC       PAC      Q     Prob>Q  [Autocorrelation]  [Partial Autocor]
+{hline 79}
+1     {res}{col 9} 0.7605{col 18} 0.7655{col 27} 12.247{col 36}0.0005{col 44}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}  {col 63}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}{hline 1}  
+{txt}2     {res}{col 9} 0.3810{col 18}-0.4494{col 27} 15.513{col 36}0.0004{col 44}        {c LT}{hline 1}{hline 1}{hline 1}     {col 63}     {hline 1}{hline 1}{hline 1}{c RT}        
+{txt}3     {res}{col 9} 0.0162{col 18}-0.2016{col 27} 15.519{col 36}0.0014{col 44}        {c |}        {col 63}       {hline 1}{c RT}        
+{txt}4     {res}{col 9}-0.2428{col 18}-0.1501{col 27} 17.035{col 36}0.0019{col 44}       {hline 1}{c RT}        {col 63}       {hline 1}{c RT}        
+{txt}5     {res}{col 9}-0.4105{col 18}-0.3168{col 27}   21.7{col 36}0.0006{col 44}     {hline 1}{hline 1}{hline 1}{c RT}        {col 63}      {hline 1}{hline 1}{c RT}        
+{txt}6     {res}{col 9}-0.4604{col 18}-0.1722{col 27} 28.058{col 36}0.0001{col 44}     {hline 1}{hline 1}{hline 1}{c RT}        {col 63}       {hline 1}{c RT}        
+{txt}7     {res}{col 9}-0.4188{col 18}-0.2474{col 27} 33.797{col 36}0.0000{col 44}     {hline 1}{hline 1}{hline 1}{c RT}        {col 63}       {hline 1}{c RT}        
+{txt}
+{com}. 
+. * Ingresos Fiscales
+. gen t_Y_st = d1.t_Y // Sacando primera diferencias por tener raiz unitaria
+{txt}(1 missing value generated)
+
+{com}. line t_Y_st Año, title(Ingresos Fiscales %PIB)
+{res}{txt}
+{com}. *GINI
+. reg GINI trend
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}        18
+{txt}{hline 13}{c +}{hline 34}   F(1, 16)        = {res}    20.58
+{txt}       Model {c |} {res} 92.5013249         1  92.5013249   {txt}Prob > F        ={res}    0.0003
+{txt}    Residual {c |} {res} 71.8986674        16  4.49366671   {txt}R-squared       ={res}    0.5627
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5353
+{txt}       Total {c |} {res} 164.399992        17  9.67058779   {txt}Root MSE        =   {res} 2.1198
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}        GINI{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}trend {c |}{col 14}{res}{space 2}-.4369453{col 26}{space 2}  .096306{col 37}{space 1}   -4.54{col 46}{space 3}0.000{col 54}{space 4} -.641105{col 67}{space 3}-.2327856
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 58.65098{col 26}{space 2} 1.042451{col 37}{space 1}   56.26{col 46}{space 3}0.000{col 54}{space 4} 56.44108{col 67}{space 3} 60.86088
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. predict GINI_detr, resid
+{txt}
+{com}. predict pibt, resid
+{txt}
+{com}. line GINI_detr Año,title(GINI_detrended)
+{res}{txt}
+{com}. corrgram GINI_detr   //Correlograma cae abruptamente, signo de estacionariedad
+
+{txt}{col 43}-1       0       1 -1       0       1
+ LAG       AC       PAC      Q     Prob>Q  [Autocorrelation]  [Partial Autocor]
+{hline 79}
+1     {res}{col 9} 0.5107{col 18} 0.5107{col 27}  5.524{col 36}0.0188{col 44}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}    {col 63}        {c LT}{hline 1}{hline 1}{hline 1}{hline 1}    
+{txt}2     {res}{col 9}-0.0755{col 18}-0.4593{col 27} 5.6522{col 36}0.0592{col 44}        {c |}        {col 63}     {hline 1}{hline 1}{hline 1}{c RT}        
+{txt}3     {res}{col 9}-0.4272{col 18}-0.2838{col 27} 10.032{col 36}0.0183{col 44}     {hline 1}{hline 1}{hline 1}{c RT}        {col 63}      {hline 1}{hline 1}{c RT}        
+{txt}4     {res}{col 9}-0.4074{col 18}-0.2671{col 27} 14.299{col 36}0.0064{col 44}     {hline 1}{hline 1}{hline 1}{c RT}        {col 63}      {hline 1}{hline 1}{c RT}        
+{txt}5     {res}{col 9}-0.1644{col 18}-0.2151{col 27} 15.047{col 36}0.0102{col 44}       {hline 1}{c RT}        {col 63}       {hline 1}{c RT}        
+{txt}6     {res}{col 9} 0.1084{col 18}-0.0525{col 27} 15.399{col 36}0.0174{col 44}        {c |}        {col 63}        {c |}        
+{txt}7     {res}{col 9} 0.2391{col 18} 0.1605{col 27}  17.27{col 36}0.0157{col 44}        {c LT}{hline 1}       {col 63}        {c LT}{hline 1}       
+{txt}
+{com}. 
+. reg t_Y_st l_pib GINI 
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}        17
+{txt}{hline 13}{c +}{hline 34}   F(2, 14)        = {res}     0.43
+{txt}       Model {c |} {res} .000052856         2  .000026428   {txt}Prob > F        ={res}    0.6568
+{txt}    Residual {c |} {res} .000853956        14  .000060997   {txt}R-squared       ={res}    0.0583
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}   -0.0762
+{txt}       Total {c |} {res} .000906811        16  .000056676   {txt}Root MSE        =   {res} .00781
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      t_Y_st{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}l_pib {c |}{col 14}{res}{space 2} .0128314{col 26}{space 2} .0149387{col 37}{space 1}    0.86{col 46}{space 3}0.405{col 54}{space 4}-.0192089{col 67}{space 3} .0448718
+{txt}{space 8}GINI {c |}{col 14}{res}{space 2} .0003592{col 26}{space 2}  .000909{col 37}{space 1}    0.40{col 46}{space 3}0.699{col 54}{space 4}-.0015904{col 67}{space 3} .0023088
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-.1690051{col 26}{space 2} .2176502{col 37}{space 1}   -0.78{col 46}{space 3}0.450{col 54}{space 4}-.6358183{col 67}{space 3} .2978081
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. predict residual, res
+{txt}(1 missing value generated)
+
+{com}. line residual Año, title(Residuos vs Tiempo)
+{res}{txt}
+{com}. twoway (scatter residual L.residual) (lfit residual L.residual), title(Residuos vs. Residuos con rezago)
+{res}{txt}
+{com}. dfgls residual, maxlag(1) // No se rechaza la hipotesis nula
+ 
+{txt}DF-GLS for {res}residual{col 58}{txt}Number of obs = {res}   15
+ 
+{txt}{col 16}DF-GLS tau{col 32}1% Critical{col 50}5% Critical{col 67}10% Critical
+  [lags]{col 14}Test Statistic{col 36}Value{col 54}Value{col 72}Value
+{hline 78}
+{col 5}1{col 14}{res}    -2.292{col 31}    -3.770{col 49}    -3.517{col 67}    -3.091
+{txt}
+{com}. 
+. ** Ho: No hay Cointegracion
+. ** H1: Si hay Cointegracion
+. 
+. ssc install egranger
+{txt}checking {hilite:egranger} consistency and verifying not already installed...
+all files already exist and are up to date.
+
+{com}. egranger pib_detr t_Y_st  // No hay cointegracion
+
+{txt}Engle-Granger test for cointegration{col 55}N (1st step)  ={res}       17
+{col 55}{txt}N (test)      ={res}       16
+{txt}{hline 78}
+{col 19}Test{col 32}1% Critical{col 50}5% Critical{col 67}10% Critical
+{col 16}Statistic{col 36}Value{col 54}Value{col 72}Value
+{hline 78}
+ Z(t){col 15}{res}    -1.700{col 33}    -4.669{col 51}    -3.745{col 69}    -3.320
+
+{txt}Critical values from MacKinnon (1990, 2010)
+
+{com}. 
+. 
+. *Inciso f.) En el modelo estimado se puede hacer inferencia estandar?
+. 
+. // Verificando si se cumplen supuestos para inferencia estandar
+. reg t_Y_st pib_detr GINI_detr
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}        17
+{txt}{hline 13}{c +}{hline 34}   F(2, 14)        = {res}     0.17
+{txt}       Model {c |} {res} .000021488         2  .000010744   {txt}Prob > F        ={res}    0.8455
+{txt}    Residual {c |} {res} .000885323        14  .000063237   {txt}R-squared       ={res}    0.0237
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}   -0.1158
+{txt}       Total {c |} {res} .000906811        16  .000056676   {txt}Root MSE        =   {res} .00795
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      t_Y_st{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}pib_detr {c |}{col 14}{res}{space 2}-.0319608{col 26}{space 2} .0738812{col 37}{space 1}   -0.43{col 46}{space 3}0.672{col 54}{space 4}-.1904203{col 67}{space 3} .1264987
+{txt}{space 3}GINI_detr {c |}{col 14}{res}{space 2} .0005875{col 26}{space 2} .0010974{col 37}{space 1}    0.54{col 46}{space 3}0.601{col 54}{space 4}-.0017662{col 67}{space 3} .0029412
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .0037485{col 26}{space 2} .0019358{col 37}{space 1}    1.94{col 46}{space 3}0.073{col 54}{space 4}-.0004033{col 67}{space 3} .0079003
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. predict resid2, resid
+{txt}(1 missing value generated)
+
+{com}. 
+. ** Prueba Breusch-Godfrey
+. * H0: Homocedasticidad; Ausencia autocorrelacion
+. * H1: Heterocedasticidad; Presencia Autocorrelacion
+. 
+. estat bgodfrey  // No hay presencia de autocorrelacion
+
+{txt}Breusch-Godfrey LM test for autocorrelation
+{hline 13}{c TT}{hline 61}
+{col 5}lags({it:p}){col 14}{c |}{col 25}chi2{col 44}df{col 63}Prob > chi2
+{hline 13}{c +}{hline 61}
+{col 6}  1{col 14}{c |}{res}{col 20}     0.181{col 43}  1{col 63}  0.6708
+{txt}{hline 13}{c BT}{hline 61}
+{col 25}H0: no serial correlation
+
+{com}. hettest            // Hay presencia de heterocedasticidad
+
+{txt}Breusch-Pagan / Cook-Weisberg test for heteroskedasticity 
+         Ho: Constant variance
+{p 9 20}Variables: fitted values of t_Y_st
+
+{col 10}chi2({res}1{txt}){col 23}={res}     4.69
+{txt}{col 10}Prob > chi2{col 23}={res}   0.0304
+{txt}
+{com}. 
+. ** Verificando Normalidad de los errores
+. qnorm resid2        // Hay presencia de Normalidad
+{res}{txt}
+{com}. sum resid2, detail  
+
+                          {txt}Residuals
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}-.0195489      -.0195489
+{txt} 5%    {res}-.0195489      -.0106352
+{txt}10%    {res}-.0106352      -.0062978       {txt}Obs         {res}         17
+{txt}25%    {res}-.0025012      -.0028799       {txt}Sum of Wgt. {res}         17
+
+{txt}50%    {res} .0011344                      {txt}Mean          {res} 8.56e-12
+                        {txt}Largest       Std. Dev.     {res} .0074386
+{txt}75%    {res} .0027006       .0029066
+{txt}90%    {res} .0104502       .0082559       {txt}Variance      {res} .0000553
+{txt}95%    {res} .0111975       .0104502       {txt}Skewness      {res}-.9034347
+{txt}99%    {res} .0111975       .0111975       {txt}Kurtosis      {res}  4.18676
+{txt}
+{com}. histogram resid2
+{txt}(bin={res}4{txt}, start={res}-.01954889{txt}, width={res}.0076866{txt})
+{res}{txt}
+{com}. 
+. ** Dado que hay heterocedasticidad se estima el modelo con matriz robusta de errores
+. reg t_Y_st pib_detr GINI_detr, robust
+
+{txt}Linear regression                               Number of obs     = {res}        17
+                                                {txt}F(2, 14)          =  {res}     0.09
+                                                {txt}Prob > F          = {res}    0.9104
+                                                {txt}R-squared         = {res}    0.0237
+                                                {txt}Root MSE          =    {res} .00795
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      t_Y_st{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}pib_detr {c |}{col 14}{res}{space 2}-.0319608{col 26}{space 2} .0782827{col 37}{space 1}   -0.41{col 46}{space 3}0.689{col 54}{space 4}-.1998606{col 67}{space 3} .1359389
+{txt}{space 3}GINI_detr {c |}{col 14}{res}{space 2} .0005875{col 26}{space 2} .0015603{col 37}{space 1}    0.38{col 46}{space 3}0.712{col 54}{space 4} -.002759{col 67}{space 3} .0039339
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .0037485{col 26}{space 2} .0020303{col 37}{space 1}    1.85{col 46}{space 3}0.086{col 54}{space 4} -.000606{col 67}{space 3}  .008103
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. * Inciso H " Estime el Modelo De correccion De errores " 
+. 
+. ** Regresion de largo plazo 
+. reg t_Y_st l_pib GINI
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}        17
+{txt}{hline 13}{c +}{hline 34}   F(2, 14)        = {res}     0.43
+{txt}       Model {c |} {res} .000052856         2  .000026428   {txt}Prob > F        ={res}    0.6568
+{txt}    Residual {c |} {res} .000853956        14  .000060997   {txt}R-squared       ={res}    0.0583
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}   -0.0762
+{txt}       Total {c |} {res} .000906811        16  .000056676   {txt}Root MSE        =   {res} .00781
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      t_Y_st{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}l_pib {c |}{col 14}{res}{space 2} .0128314{col 26}{space 2} .0149387{col 37}{space 1}    0.86{col 46}{space 3}0.405{col 54}{space 4}-.0192089{col 67}{space 3} .0448718
+{txt}{space 8}GINI {c |}{col 14}{res}{space 2} .0003592{col 26}{space 2}  .000909{col 37}{space 1}    0.40{col 46}{space 3}0.699{col 54}{space 4}-.0015904{col 67}{space 3} .0023088
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-.1690051{col 26}{space 2} .2176502{col 37}{space 1}   -0.78{col 46}{space 3}0.450{col 54}{space 4}-.6358183{col 67}{space 3} .2978081
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. predict residua2, res
+{txt}(1 missing value generated)
+
+{com}. varsoc residua2, exog(Año)
+
+{txt}{col 4}Selection-order criteria
+{col 4}Sample:  {res}2005 - 2017 {txt}{col 49}Number of obs {col 68}= {res}       13
+{col 3}{text}{c TLC}{hline 4}{c TT}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c TRC}
+{col 3}{text}{c |}lag{col 8}{c |}    LL  {col 18}   LR  {col 27}  df{col 32}   p  {col 39}   FPE {col 48}    AIC {col 58}   HQIC {col 68}   SBIC {col 79}{c |}
+{col 3}{text}{c LT}{hline 4}{c +}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c RT}
+{col 3}{text}{c |}  0{col 8}{c |}{result}{space 1} 45.4268{col 18}{col 27}{col 32}{col 39} .000074{col 47}*{col 48}{space 1}-6.68105{col 57}*{col 58}{space 1}-6.69891{col 67}*{col 68}{space 1}-6.59413{col 77}*{col 79}{text}{c |}
+{col 3}{text}{c |}  1{col 8}{c |}{result}{space 1} 45.4269{col 18}{space 1} .00023{col 27}   1{col 32} 0.988{col 39} .000086{col 48}{space 1}-6.52722{col 58}{space 1}-6.55402{col 68}{space 1}-6.39685{col 79}{text}{c |}
+{col 3}{text}{c |}  2{col 8}{c |}{result}{space 1} 45.4315{col 18}{space 1} .00916{col 27}   1{col 32} 0.924{col 39} .000102{col 48}{space 1}-6.37408{col 58}{space 1}-6.40981{col 68}{space 1}-6.20025{col 79}{text}{c |}
+{col 3}{text}{c |}  3{col 8}{c |}{result}{space 1} 45.4343{col 18}{space 1} .00565{col 27}   1{col 32} 0.940{col 39} .000121{col 48}{space 1}-6.22067{col 58}{space 1}-6.26533{col 68}{space 1}-6.00338{col 79}{text}{c |}
+{col 3}{text}{c |}  4{col 8}{c |}{result}{space 1} 45.4452{col 18}{space 1} .02173{col 27}   1{col 32} 0.883{col 39} .000146{col 48}{space 1}-6.06849{col 58}{space 1}-6.12209{col 68}{space 1}-5.80775{col 79}{text}{c |}
+{col 3}{text}{c BLC}{hline 4}{c BT}{hline 9}{hline 8}{hline 1}{hline 5}{hline 7}{hline 8}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 9}{hline 1}{hline 1}{c BRC}
+{space 3}Endogenous:  residua2
+{space 3} Exogenous:  Año  _cons
+
+{com}. dfgls residua2, maxlag(0) // los criterios de informacion nos dicen que el maximo de rezagos es 0
+ 
+{txt}DF-GLS for {res}residua2{col 58}{txt}Number of obs = {res}   16
+ 
+{txt}{col 16}DF-GLS tau{col 32}1% Critical{col 50}5% Critical{col 67}10% Critical
+  [lags]{col 14}Test Statistic{col 36}Value{col 54}Value{col 72}Value
+{hline 78}
+{col 5}0{col 14}{res}    -3.431{col 31}    -3.770{col 49}    -3.623{col 67}    -3.204
+{txt}
+{com}. 
+. ***Diferencias de una serie
+. gen dl_pib=d.l_pib
+{txt}(1 missing value generated)
+
+{com}. gen dGINI=d.GINI
+{txt}(1 missing value generated)
+
+{com}. gen lres=l.residua2 //resagamos un periodo los residuos de la regrecion a largo plazo 
+{txt}(2 missing values generated)
+
+{com}. gen dres=d.lres
+{txt}(3 missing values generated)
+
+{com}. 
+. ** Regresion De Corto Plazo 
+. reg t_Y_st dl_pib dGINI lres 
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}        16
+{txt}{hline 13}{c +}{hline 34}   F(3, 12)        = {res}     2.87
+{txt}       Model {c |} {res} .000374548         3  .000124849   {txt}Prob > F        ={res}    0.0804
+{txt}    Residual {c |} {res} .000521126        12  .000043427   {txt}R-squared       ={res}    0.4182
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2727
+{txt}       Total {c |} {res} .000895674        15  .000059712   {txt}Root MSE        =   {res} .00659
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      t_Y_st{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}dl_pib {c |}{col 14}{res}{space 2} .2739702{col 26}{space 2} .0963311{col 37}{space 1}    2.84{col 46}{space 3}0.015{col 54}{space 4} .0640827{col 67}{space 3} .4838576
+{txt}{space 7}dGINI {c |}{col 14}{res}{space 2}-.0008828{col 26}{space 2} .0009511{col 37}{space 1}   -0.93{col 46}{space 3}0.372{col 54}{space 4}-.0029552{col 67}{space 3} .0011895
+{txt}{space 8}lres {c |}{col 14}{res}{space 2}-.0311172{col 26}{space 2} .2329572{col 37}{space 1}   -0.13{col 46}{space 3}0.896{col 54}{space 4}-.5386874{col 67}{space 3}  .476453
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-.0071668{col 26}{space 2} .0043075{col 37}{space 1}   -1.66{col 46}{space 3}0.122{col 54}{space 4} -.016552{col 67}{space 3} .0022184
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. /*I - )  Interprete el impacto del crecimiento de la economía en  “ H” 
+> Basándonos en el inciso  “H”   podemos decir que: 
+> Si el coefiente de GINI  aumenta en 1 unidad adicional, la recaudación tributaria como proporción del PIB disminuyen en 0.0008828 puntos. 
+> Si el pib real aumenta en 1 %  adicional, la recaudación tributaria como proporción del PIB  se incrementaran en 0.2739702  puntos.
+> 
+
+{txt}end of do-file
+
+{com}. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\user\Desktop\Econometria - Efecto del COVID-19\Ejercicio 2 - COVID19.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res} 9 May 2020, 22:42:59
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
